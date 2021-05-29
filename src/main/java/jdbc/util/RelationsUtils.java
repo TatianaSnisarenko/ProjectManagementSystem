@@ -157,6 +157,43 @@ public class RelationsUtils {
             throwables.printStackTrace();
             return null;
         }
+    }
 
+    public static List<DeveloperDao> getAllDevelopersWithSkillLanguage(String skillLanguage) {
+        String query = "select d.id_developer, d.name, d.age, d.sex, d.id_company, d.salary from developers d, skills s, developers_skills ds " +
+                "where d.id_developer = ds.id_developer and s.id_skill=ds.id_skill and s.language=?::language_choice";
+        List<DeveloperDao> developerDaos = new ArrayList<>();
+        try (Connection connection = CONNECTION_MANAGER.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, skillLanguage);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                developerDaos.add(DeveloperConverter.toDeveloperDao(resultSet));
+            }
+            return developerDaos;
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+    }
+
+    public static List<DeveloperDao> getAllDevelopersWithSkillLevel(String skillLevel) {
+        String query = "select d.id_developer, d.name, d.age, d.sex, d.id_company, d.salary from developers d, skills s, developers_skills ds" +
+                " where d.id_developer = ds.id_developer and s.id_skill=ds.id_skill and s.level=?::level_choice";
+        List<DeveloperDao> developerDaos = new ArrayList<>();
+        try (Connection connection = CONNECTION_MANAGER.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, skillLevel);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                developerDaos.add(DeveloperConverter.toDeveloperDao(resultSet));
+            }
+            return developerDaos;
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
     }
 }

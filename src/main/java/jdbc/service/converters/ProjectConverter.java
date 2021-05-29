@@ -6,6 +6,7 @@ import jdbc.util.RelationsUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +17,7 @@ public class ProjectConverter {
         projectDao.setName(projectTo.getName());
         projectDao.setDescription(projectTo.getDescription());
         projectDao.setCost(projectTo.getCost());
+        projectDao.setDate(projectTo.getDate());
         return projectDao;
     }
 
@@ -25,6 +27,7 @@ public class ProjectConverter {
         projectTo.setName(projectDao.getName());
         projectTo.setDescription(projectDao.getDescription());
         projectTo.setCost(projectDao.getCost());
+        projectTo.setDate(projectDao.getDate());
         projectTo.setCompanies(RelationsUtils.getAllCompaniesForProject(projectDao.getIdProject()));
         projectTo.setCustomers(RelationsUtils.getCustomerForProject(projectDao.getIdProject()));
         projectTo.setDevelopers(RelationsUtils.getAllDevelopersForProject(projectDao.getIdProject()));
@@ -37,6 +40,7 @@ public class ProjectConverter {
         projectDao.setName(resultSet.getString("name"));
         projectDao.setDescription(resultSet.getString("description"));
         projectDao.setCost(resultSet.getDouble("cost"));
+        projectDao.setDate(resultSet.getObject("creation_date", LocalDate.class));
         return projectDao;
     }
 

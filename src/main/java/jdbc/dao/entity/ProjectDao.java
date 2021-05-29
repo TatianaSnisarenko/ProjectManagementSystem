@@ -1,5 +1,6 @@
 package jdbc.dao.entity;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class ProjectDao {
@@ -7,6 +8,7 @@ public class ProjectDao {
     private String name;
     private String description;
     private double cost;
+    private LocalDate date;
 
     public ProjectDao() {
     }
@@ -43,13 +45,22 @@ public class ProjectDao {
         this.cost = cost;
     }
 
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
     @Override
     public String toString() {
-        return "Project{" +
-                "id_project=" + idProject +
+        return "ProjectDao{" +
+                "idProject=" + idProject +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", cost=" + cost +
+                ", date=" + date +
                 '}';
     }
 
@@ -58,12 +69,12 @@ public class ProjectDao {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProjectDao that = (ProjectDao) o;
-        return Double.compare(that.cost, cost) == 0 && Objects.equals(name, that.name) && Objects.equals(description, that.description);
+        return Double.compare(that.cost, cost) == 0 && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(date, that.date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, cost);
+        return Objects.hash(name, description, cost, date);
     }
 }
 

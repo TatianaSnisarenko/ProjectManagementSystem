@@ -40,10 +40,10 @@ public class ProjectRepository implements Repository<ProjectDao> {
 
     @Override
     public ProjectDao update(ProjectDao projectDao) {
-        String query = "update projects set name=?, description=?, cost=? where id_project=?";
+        String query = "update projects set name=?, description=?, cost=?, creation_date=? where id_project=?";
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(4, projectDao.getIdProject());
+            preparedStatement.setInt(5, projectDao.getIdProject());
             setValuesAndExecutePreparedStatement(projectDao, preparedStatement);
             return findById(projectDao.getIdProject());
         } catch (SQLException ex) {
@@ -55,7 +55,7 @@ public class ProjectRepository implements Repository<ProjectDao> {
     @Override
     public ProjectDao create(ProjectDao projectDao) {
         if (!exists(projectDao)) {
-            String query = "insert into projects (name, description, cost) VALUES (?,?,?)";
+            String query = "insert into projects (name, description, cost, creation_date) VALUES (?,?,?,?)";
             try (Connection connection = connectionManager.getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 setValuesAndExecutePreparedStatement(projectDao, preparedStatement);
@@ -73,7 +73,7 @@ public class ProjectRepository implements Repository<ProjectDao> {
 
     @Override
     public ProjectDao findById(int projectId) {
-        String query = "select id_project, name, description, cost from projects where id_project=?";
+        String query = "select id_project, name, description, cost, creation_date from projects where id_project=?";
         ProjectDao projectDao = null;
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -90,7 +90,7 @@ public class ProjectRepository implements Repository<ProjectDao> {
 
     @Override
     public List<ProjectDao> findAll() {
-        String query = "select id_project, name, description, cost from projects";
+        String query = "select id_project, name, description, cost, creation_date from projects";
         List<ProjectDao> allprojects = new ArrayList<>();
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -115,11 +115,11 @@ public class ProjectRepository implements Repository<ProjectDao> {
                 .findFirst().orElse(new ProjectDao()).getIdProject();
     }
 
-
     private void setValuesAndExecutePreparedStatement(ProjectDao projectDao, PreparedStatement preparedStatement) throws SQLException {
         preparedStatement.setString(1, projectDao.getName());
         preparedStatement.setString(2, projectDao.getDescription());
         preparedStatement.setDouble(3, projectDao.getCost());
+        preparedStatement.setDate(4, java.sql.Date.valueOf(projectDao.getDate()));
         preparedStatement.executeUpdate();
     }
 
