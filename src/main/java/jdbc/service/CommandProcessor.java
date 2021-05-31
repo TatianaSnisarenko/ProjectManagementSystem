@@ -1,16 +1,23 @@
 package jdbc.service;
 
+import jdbc.dto.CompanyTo;
+import jdbc.dto.DeveloperTo;
 import jdbc.util.CommandUtil;
+import jdbc.util.DefaultUtil;
 import view.View;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class CommandProcessor {
     CommandUtil commandUtil;
+    DefaultUtil defaultUtil;
     View view;
 
-    public CommandProcessor(CommandUtil commandUtil, View view) {
+    public CommandProcessor(CommandUtil commandUtil, DefaultUtil defaultUtil, View view) {
         this.commandUtil = commandUtil;
+        this.defaultUtil = defaultUtil;
         this.view = view;
     }
 
@@ -60,7 +67,7 @@ public class CommandProcessor {
         switch (message.toLowerCase()) {
             case "s":
                 id = getIdFromUserForProject();
-                if(id == -1){
+                if (id == -1) {
                     return true;
                 }
                 view.write("The hole sum of salaries per this project is " + commandUtil.getAllSalariesForProject(id) + "$");
@@ -68,7 +75,7 @@ public class CommandProcessor {
                 return true;
             case "d":
                 id = getIdFromUserForProject();
-                if(id == -1){
+                if (id == -1) {
                     return true;
                 }
                 view.write("The list of developers per this project:");
@@ -90,27 +97,30 @@ public class CommandProcessor {
                 commandUtil.getShortDescriptionOfAllProjects().forEach(System.out::println);
                 view.write("");
                 return true;
-            case"l":
+            case "l":
                 return true;
             case "cc":
-                //createCompany();
+                view.write("You created company: " + createCompany().toString());
                 view.write("");
                 return true;
             case "fci":
                 id = getIdFromUserForCompany();
-                if(id == -1){
+                if (id == -1) {
                     return true;
                 }
                 view.write(commandUtil.findCompanyById(id).toString());
                 view.write("");
                 return true;
             case "cu":
-                //updateCompany();
-                view.write("");
+                id = getIdFromUserForCompany();
+                if (id == -1) {
+                    return true;
+                }
+                view.write("You updated company with id=" + id + ": " + updateCompany(id).toString());
                 return true;
             case "cd":
                 id = getIdFromUserForCompany();
-                if(id == -1){
+                if (id == -1) {
                     return true;
                 }
                 view.write("You deleted: " + commandUtil.deleteCompanyById(id));
@@ -121,24 +131,28 @@ public class CommandProcessor {
                 view.write("");
                 return true;
             case "dc":
-               // createDeveloper();
+                view.write("You created developer: " + createDeveloper().toString());
                 view.write("");
                 return true;
             case "fdi":
                 id = getIdFromUserForDeveloper();
-                if(id == -1){
+                if (id == -1) {
                     return true;
                 }
                 view.write(commandUtil.findDeveloperById(id).toString());
                 view.write("");
                 return true;
             case "du":
-                //updateDeveloper();
+                id = getIdFromUserForDeveloper();
+                if (id == -1) {
+                    return true;
+                }
+                view.write("You updated developer with id=" + id + ": " + updateDeveloper(id));
                 view.write("");
                 return true;
             case "dd":
                 id = getIdFromUserForDeveloper();
-                if(id == -1){
+                if (id == -1) {
                     return true;
                 }
                 view.write("You deleted: " + commandUtil.deleteDeveloperById(id));
@@ -154,39 +168,121 @@ public class CommandProcessor {
         }
     }
 
-    private int getIdFromUserForProject(){
+    private DeveloperTo updateDeveloper(int id) {
+        List<Integer> ages = IntStream.range(18, 120).boxed().collect(Collectors.toList());
+        view.write("Please enter developer name");
+        String name = view.read();
+        view.write("Please enter developers age - an integer number");
+        int age = getIntegerFromConsole(view.read(), ages);
+        view.write("Please enter sex: male of female");
+        String sex = getSexFromUser(view.read().toLowerCase());
+        int companyId = getIdFromUserForCompany();
+        view.write("Please enter salary");
+        double salary = getSalaryFromUser(view.read());
+        return commandUtil.consoleDeveloperUpdate(name, age, sex, companyId, salary, id);
+    }
+
+    private CompanyTo createCompany() {
+        CompanyTo companyTo = defaultUtil.getDefaultCompanyTo();
+        view.write("Please enter company name");
+        String name = view.read();
+        view.write("Please enter company city");
+        String city = view.read();
+        return commandUtil.consoleCompanyCreate(name, city, companyTo);
+    }
+
+    private CompanyTo updateCompany(int id) {
+        view.write("Please enter company name");
+        String name = view.read();
+        view.write("Please enter company city");
+        String city = view.read();
+        return commandUtil.consoleCompanyUpdate(name, city, id);
+    }
+
+    private DeveloperTo createDeveloper() {
+        DeveloperTo developerTo = defaultUtil.getDefaultDeveloperTo1();
+        List<Integer> ages = IntStream.range(18, 120).boxed().collect(Collectors.toList());
+        view.write("Please enter developer name");
+        String name = view.read();
+        view.write("Please enter developers age - an integer number");
+        int age = getIntegerFromConsole(view.read(), ages);
+        view.write("Please enter sex: male of female");
+        String sex = getSexFromUser(view.read().toLowerCase());
+        int companyId = getIdFromUserForCompany();
+        view.write("Please enter salary");
+        double salary = getSalaryFromUser(view.read());
+        return commandUtil.consoleDeveloperCreate(name, age, sex, companyId, salary, developerTo);
+    }
+
+    private String getSexFromUser(String input) {
+        String errorMessage = "It's not the correct sex: please enter male or female";
+        String sex = input.strip().toLowerCase();
+        boolean isFieldBlank = true;
+        while (isFieldBlank) {
+            if (sex.equals("male") || sex.equals("female")) {
+                isFieldBlank = false;
+            } else {
+                view.write(errorMessage);
+                sex = view.read().strip().toLowerCase();
+            }
+        }
+        return sex;
+    }
+
+    private double getSalaryFromUser(String input) {
+        String errorMessage = "It's not a coorect number for salary, please try again";
+        input = input.replaceAll(",", ".");
+        double number = 0;
+        boolean isFieldBlank = true;
+        while (isFieldBlank) {
+            try {
+                number = Double.parseDouble(input);
+                if (number < 0) {
+                    view.write(errorMessage);
+                    input = view.read().replaceAll(",", ".");
+                } else {
+                    isFieldBlank = false;
+                }
+            } catch (Exception e) {
+                view.write(errorMessage);
+                input = view.read().replaceAll(",", ".");
+            }
+        }
+        return number;
+    }
+
+    private int getIdFromUserForProject() {
         List<Integer> listOfValidIndexesForProject = commandUtil.getListOfValidIndexesForProject();
-        if(!listOfValidIndexesForProject.isEmpty()) {
+        if (!listOfValidIndexesForProject.isEmpty()) {
             view.write("Please enter the id of the project from the list: " + listOfValidIndexesForProject.toString());
             return getIntegerFromConsole(view.read(), listOfValidIndexesForProject);
-        }else{
+        } else {
             view.write("There are no projects in the database available");
             return -1;
         }
     }
 
-    private int getIdFromUserForDeveloper(){
+    private int getIdFromUserForDeveloper() {
         List<Integer> listOfValidIndexesForDeveloper = commandUtil.getListOfValidIndexesForDeveloper();
-        if(!listOfValidIndexesForDeveloper.isEmpty()) {
+        if (!listOfValidIndexesForDeveloper.isEmpty()) {
             view.write("Please enter the id of the developer from the list: " + listOfValidIndexesForDeveloper.toString());
             return getIntegerFromConsole(view.read(), listOfValidIndexesForDeveloper);
-        }else{
+        } else {
             view.write("There are no developers in the database available");
             return -1;
         }
     }
 
-    private int getIdFromUserForCompany(){
+    private int getIdFromUserForCompany() {
         List<Integer> listOfValidIndexesForCompany = commandUtil.getListOfValidIndexesForCompany();
-        if(!listOfValidIndexesForCompany.isEmpty()) {
+        if (!listOfValidIndexesForCompany.isEmpty()) {
             view.write("Please enter the id of the company from the list: " + listOfValidIndexesForCompany.toString());
             return getIntegerFromConsole(view.read(), listOfValidIndexesForCompany);
-        }else{
+        } else {
             view.write("There are no developers in the database available");
             return -1;
         }
     }
-
 
     private int getIntegerFromConsole(String input, List<Integer> indexes) {
         String errorMessage = "It's not a correct number, please try again";
@@ -203,6 +299,7 @@ public class CommandProcessor {
                 }
             } catch (Exception e) {
                 view.write(errorMessage);
+                input = view.read();
             }
         }
         return number;

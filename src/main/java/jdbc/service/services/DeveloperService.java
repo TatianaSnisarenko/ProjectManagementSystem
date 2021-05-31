@@ -66,13 +66,14 @@ public class DeveloperService {
         return DeveloperConverter.fromDeveloperDao(updatedDeveloperDao);
     }
 
-    public DeveloperTo updateConsole(String name, int age, String sex, int companyId, double salary, DeveloperTo defaultDeveloperTo, CompanyService companyService){
-        defaultDeveloperTo.setName(name);
-        defaultDeveloperTo.setAge(age);
-        defaultDeveloperTo.setSex(sex);
-        defaultDeveloperTo.setCompanyDao(CompanyConverter.toCompanyDao(companyService.findById(companyId)));
-        defaultDeveloperTo.setSalary(salary);
-        return update(defaultDeveloperTo);
+    public DeveloperTo updateConsole(String name, int age, String sex, int companyId, double salary, int id, CompanyService companyService){
+        DeveloperTo developerTo = findById(id);
+        developerTo.setName(name);
+        developerTo.setAge(age);
+        developerTo.setSex(sex);
+        developerTo.setCompanyDao(CompanyConverter.toCompanyDao(companyService.findById(companyId)));
+        developerTo.setSalary(salary);
+        return update(developerTo);
     }
 
     public DeveloperTo deleteById(int developerId) {

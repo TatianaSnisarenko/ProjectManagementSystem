@@ -9,6 +9,7 @@ import jdbc.service.services.CompanyService;
 import jdbc.service.services.DeveloperService;
 import jdbc.service.services.ProjectService;
 import jdbc.util.CommandUtil;
+import jdbc.util.DefaultUtil;
 import jdbc.util.PropertiesConfig;
 import view.Console;
 import view.View;
@@ -37,8 +38,9 @@ public class Application {
 
         CommandUtil commandUtil = new CommandUtil(projectService, companyService, developerService);
         View view = new Console();
+        DefaultUtil defaultUtil = new DefaultUtil();
 
-        CommandProcessor commandProcessor = new CommandProcessor(commandUtil, view);
+        CommandProcessor commandProcessor = new CommandProcessor(commandUtil, defaultUtil, view);
         commandProcessor.process();
     }
 }

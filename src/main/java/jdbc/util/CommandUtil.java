@@ -52,8 +52,8 @@ public class CommandUtil {
         return companyService.consoleCreate(name, city, defaultCompanyTo);
     }
 
-    public CompanyTo consoleCompanyUpdate(String name, String city, CompanyTo defaultCompanyTo){
-        return companyService.consoleUpdate(name, city, defaultCompanyTo);
+    public CompanyTo consoleCompanyUpdate(String name, String city, int id){
+        return companyService.consoleUpdate(name, city, id);
     }
 
     public CompanyTo findCompanyById(int id) {
@@ -68,12 +68,12 @@ public class CommandUtil {
         return companyService.deleteById(id);
     }
 
-    public DeveloperTo createDeveloperConsole(String name, int age, String sex, int companyId, double salary, DeveloperTo defaultDeveloperTo){
+    public DeveloperTo consoleDeveloperCreate(String name, int age, String sex, int companyId, double salary, DeveloperTo defaultDeveloperTo){
         return developerService.createConsole(name, age, sex, companyId, salary, defaultDeveloperTo, companyService);
     }
 
-    public DeveloperTo updateDeveloperConsole(String name, int age, String sex, int companyId, double salary, DeveloperTo defaultDeveloperTo){
-        return developerService.updateConsole(name, age, sex, companyId, salary, defaultDeveloperTo, companyService);
+    public DeveloperTo consoleDeveloperUpdate(String name, int age, String sex, int companyId, double salary, int id){
+        return developerService.updateConsole(name, age, sex, companyId, salary, id, companyService);
     }
 
     public DeveloperTo findDeveloperById(int id) {

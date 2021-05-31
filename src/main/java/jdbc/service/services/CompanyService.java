@@ -52,10 +52,11 @@ public class CompanyService {
         return CompanyConverter.fromCompanyDao(updatedCompanyDao);
     }
 
-    public CompanyTo consoleUpdate(String name, String city, CompanyTo defaultCompanyTo){
-        defaultCompanyTo.setName(name);
-        defaultCompanyTo.setCity(city);
-        return update(defaultCompanyTo);
+    public CompanyTo consoleUpdate(String name, String city, int id){
+        CompanyTo companyTo = findById(id);
+        companyTo.setName(name);
+        companyTo.setCity(city);
+        return update(companyTo);
     }
 
     public CompanyTo deleteById(int companyId) {
