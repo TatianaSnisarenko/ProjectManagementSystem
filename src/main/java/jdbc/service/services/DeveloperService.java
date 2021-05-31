@@ -7,6 +7,7 @@ import jdbc.dao.entity.SkillDao;
 import jdbc.dao.repositories.one_entity_repositories.Repository;
 import jdbc.dao.repositories.relations_repositories.RelationsRepository;
 import jdbc.dto.DeveloperTo;
+import jdbc.service.converters.CompanyConverter;
 import jdbc.service.converters.DeveloperConverter;
 
 import java.util.List;
@@ -42,6 +43,15 @@ public class DeveloperService {
         return DeveloperConverter.fromDeveloperDao(createdDeveloperDao);
     }
 
+    public DeveloperTo createConsole(String name, int age, String sex, int companyId, double salary, DeveloperTo defaultDeveloperTo, CompanyService companyService){
+        defaultDeveloperTo.setName(name);
+        defaultDeveloperTo.setAge(age);
+        defaultDeveloperTo.setSex(sex);
+        defaultDeveloperTo.setCompanyDao(CompanyConverter.toCompanyDao(companyService.findById(companyId)));
+        defaultDeveloperTo.setSalary(salary);
+        return create(defaultDeveloperTo);
+    }
+
     public DeveloperTo findById(int developerId) {
         return DeveloperConverter.fromDeveloperDao(developerRepository.findById(developerId));
     }
@@ -54,6 +64,15 @@ public class DeveloperService {
         projectsToBeDeleted.forEach(projectDao -> developersProjectsRepository.delete(developerTo.getIdDeveloper(), projectDao.getIdProject()));
         addSkillsAndRelations(developerTo, updatedDeveloperDao);
         return DeveloperConverter.fromDeveloperDao(updatedDeveloperDao);
+    }
+
+    public DeveloperTo updateConsole(String name, int age, String sex, int companyId, double salary, DeveloperTo defaultDeveloperTo, CompanyService companyService){
+        defaultDeveloperTo.setName(name);
+        defaultDeveloperTo.setAge(age);
+        defaultDeveloperTo.setSex(sex);
+        defaultDeveloperTo.setCompanyDao(CompanyConverter.toCompanyDao(companyService.findById(companyId)));
+        defaultDeveloperTo.setSalary(salary);
+        return update(defaultDeveloperTo);
     }
 
     public DeveloperTo deleteById(int developerId) {
@@ -101,4 +120,7 @@ public class DeveloperService {
         developerTo.getSkills().forEach(skillDao -> developersSkillRepository.delete(developerId, skillDao.getIdSkill()));
     }
 
+    public List<Integer> getListOfValidIndexes() {
+        return developerRepository.getListOfValidIndexes();
+    }
 }

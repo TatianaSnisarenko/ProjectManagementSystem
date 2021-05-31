@@ -104,6 +104,23 @@ public class CustomerRepository implements Repository<CustomerDao> {
         return allcustomers;
     }
 
+    @Override
+    public List<Integer> getListOfValidIndexes() {
+        String query = "select id_customer, name, city from customers";
+        List<Integer> indexes = new ArrayList<>();
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                indexes.add(resultSet.getInt("id_customer"));
+            }
+            return indexes;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return indexes;
+        }
+    }
+
     private boolean exists(CustomerDao customerDao) {
         return findAll().stream()
                 .anyMatch(c -> c.equals(customerDao));

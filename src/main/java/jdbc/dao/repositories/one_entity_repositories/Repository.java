@@ -16,4 +16,5 @@ public interface Repository<T> {
 
     List<T> findAll();
 
+    List<Integer> getListOfValidIndexes();
 }

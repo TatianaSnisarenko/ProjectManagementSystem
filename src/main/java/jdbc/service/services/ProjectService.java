@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ProjectService {
-    private Repository<ProjectDao> repository;
+    private Repository<ProjectDao> projectRepository;
     private Repository<DeveloperDao> developerRepository;
     private Repository<CompanyDao> companyRepository;
     private Repository<CustomerDao> customerRepository;
@@ -25,7 +25,7 @@ public class ProjectService {
                           Repository<CompanyDao> companyRepository, Repository<CustomerDao> customerRepository,
                           RelationsRepository developersProjectsRepository, RelationsRepository companiesProjectsRepository,
                           RelationsRepository customersProjectsRepository) {
-        this.repository = repository;
+        this.projectRepository = repository;
         this.developerRepository = developerRepository;
         this.companyRepository = companyRepository;
         this.customerRepository = customerRepository;
@@ -36,7 +36,7 @@ public class ProjectService {
 
     public ProjectTo create(ProjectTo projectTo) {
         ProjectDao projectDao = ProjectConverter.toProjectDao(projectTo);
-        ProjectDao createdProjectDao = repository.create(projectDao);
+        ProjectDao createdProjectDao = projectRepository.create(projectDao);
         addDeveloperAndRelations(projectTo, createdProjectDao);
         addCompanyAndRelations(projectTo, createdProjectDao);
         addCustomerAndRelations(projectTo, createdProjectDao);
@@ -44,7 +44,7 @@ public class ProjectService {
     }
 
     public ProjectTo findById(int projectId) {
-        return ProjectConverter.fromProjectDao(repository.findById(projectId));
+        return ProjectConverter.fromProjectDao(projectRepository.findById(projectId));
     }
 
     public ProjectTo update(ProjectTo projectTo) {
@@ -52,20 +52,20 @@ public class ProjectService {
         List<CustomerDao> cutomersToBeDeleted = getCutomersToBeDeleted(projectTo);
         List<CompanyDao> companiesToBeDeleted = getCompaniesToBeDeleted(projectTo);
         ProjectDao projectDao = ProjectConverter.toProjectDao(projectTo);
-        ProjectDao updatedProject = repository.update(projectDao);
+        ProjectDao updatedProject = projectRepository.update(projectDao);
         addDeveloperAndRelations(projectTo, updatedProject);
         addCompanyAndRelations(projectTo, updatedProject);
         addCustomerAndRelations(projectTo, updatedProject);
         developersToBeDeleted.forEach(developer -> developersProjectsRepository.delete(developer.getIdDeveloper(), projectTo.getIdProject()));
         cutomersToBeDeleted.forEach(customerDao -> customersProjectsRepository.delete(customerDao.getIdCustomer(), projectTo.getIdProject()));
         companiesToBeDeleted.forEach(companyDao -> companiesProjectsRepository.delete(companyDao.getIdCompany(), projectTo.getIdProject()));
-        ProjectDao updatedProjectDao = repository.findById(projectDao.getIdProject());
+        ProjectDao updatedProjectDao = projectRepository.findById(projectDao.getIdProject());
         return ProjectConverter.fromProjectDao(updatedProjectDao);
     }
 
     public ProjectTo deletedById(int projectId) {
         deleteRelationsWithDevelopersCustomerCompanies(projectId);
-        return ProjectConverter.fromProjectDao(repository.deleteById(projectId));
+        return ProjectConverter.fromProjectDao(projectRepository.deleteById(projectId));
     }
 
     public ProjectTo deletedByObject(ProjectTo projectTo) {
@@ -73,7 +73,7 @@ public class ProjectService {
     }
 
     public List<ProjectTo> findAll() {
-        return ProjectConverter.allFromProjectDao(repository.findAll());
+        return ProjectConverter.allFromProjectDao(projectRepository.findAll());
     }
 
     private void addCustomerAndRelations(ProjectTo projectTo, ProjectDao createdProjectDao) {
@@ -123,5 +123,9 @@ public class ProjectService {
         return companiesOld.stream()
                 .filter(developerDao -> !companiesNew.contains(developerDao))
                 .collect(Collectors.toList());
+    }
+
+    public List<Integer> getListOfValidIndexes() {
+        return projectRepository.getListOfValidIndexes();
     }
 }

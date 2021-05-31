@@ -104,6 +104,23 @@ public class SkillRepository implements Repository<SkillDao> {
         return allSkillDaos;
     }
 
+    @Override
+    public List<Integer> getListOfValidIndexes() {
+        String query = "select id_skill from skills order by id_skill";
+        List<Integer> indexes = new ArrayList<>();
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                indexes.add(resultSet.getInt("id_skill"));
+            }
+            return indexes;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return indexes;
+        }
+    }
+
     private boolean exists(SkillDao skillDao) {
         return findAll().stream()
                 .anyMatch(s -> s.equals(skillDao));

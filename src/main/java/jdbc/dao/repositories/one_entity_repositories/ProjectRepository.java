@@ -104,6 +104,23 @@ public class ProjectRepository implements Repository<ProjectDao> {
         return allprojects;
     }
 
+    @Override
+    public List<Integer> getListOfValidIndexes() {
+        String query = "select id_project from projects order by id_project";
+        List<Integer> indexes = new ArrayList<>();
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                indexes.add(resultSet.getInt("id_project"));
+            }
+            return indexes;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return indexes;
+        }
+    }
+
     private boolean exists(ProjectDao projectDao) {
         return findAll().stream()
                 .anyMatch(p -> p.equals(projectDao));
@@ -138,5 +155,4 @@ public class ProjectRepository implements Repository<ProjectDao> {
             return index;
         }
     }
-
 }

@@ -21,7 +21,7 @@ public class RelationsUtils {
     }
 
     public static List<ProjectDao> getAllProjectsForCompany(int companyId) {
-        String query = "select p.id_project, p.name, p.description, p.cost from projects p, companies c, companies_projects cp " +
+        String query = "select p.id_project, p.name, p.description, p.cost, p.creation_date from projects p, companies c, companies_projects cp " +
                 "where p.id_project=cp.id_project and c.id_company=cp.id_company and c.id_company=?";
         List<ProjectDao> projects = new ArrayList<>();
         try (Connection connection = CONNECTION_MANAGER.getConnection();
@@ -40,7 +40,7 @@ public class RelationsUtils {
     }
 
     public static List<ProjectDao> getAllProjectsForCustomer(int idCustomer) {
-        String query = "select p.id_project, p.name, p.description, p.cost from projects p, customers c, customers_projects cp " +
+        String query = "select p.id_project, p.name, p.description, p.cost, p.creation_date  from projects p, customers c, customers_projects cp " +
                 "where p.id_project=cp.id_project and c.id_customer=cp.id_customer and c.id_customer=?";
         List<ProjectDao> projects = new ArrayList<>();
         try (Connection connection = CONNECTION_MANAGER.getConnection();
@@ -64,7 +64,7 @@ public class RelationsUtils {
     }
 
     public static List<ProjectDao> getAllProjectsForDeveloper(int idDeveloper) {
-        String query = "select p.id_project, p.name, p.description, p.cost from projects p, developers d, developers_projects dp " +
+        String query = "select p.id_project, p.name, p.description, p.cost, p.creation_date  from projects p, developers d, developers_projects dp " +
                 "where p.id_project=dp.id_project and d.id_developer=dp.id_developer and d.id_developer=?";
         List<ProjectDao> projects = new ArrayList<>();
         try (Connection connection = CONNECTION_MANAGER.getConnection();

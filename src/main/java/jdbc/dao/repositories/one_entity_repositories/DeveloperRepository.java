@@ -104,6 +104,23 @@ public class DeveloperRepository implements Repository<DeveloperDao> {
         return allDeveloperDaos;
     }
 
+    @Override
+    public List<Integer> getListOfValidIndexes() {
+        String query = "select id_developer from developers order by id_developer";
+        List<Integer> indexes = new ArrayList<>();
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                indexes.add(resultSet.getInt("id_developer"));
+            }
+            return indexes;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return indexes;
+        }
+    }
+
     private boolean exists(DeveloperDao developerDao) {
         return findAll().stream()
                 .anyMatch(d -> d.equals(developerDao));

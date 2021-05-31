@@ -5,6 +5,8 @@ import jdbc.dao.repositories.relations_repositories.CustomersProjectsRepository;
 import jdbc.dao.repositories.relations_repositories.DevelopersProjectsRepository;
 import jdbc.dao.repositories.relations_repositories.DevelopersSkillsRepository;
 import jdbc.service.CommandProcessor;
+import jdbc.service.services.CompanyService;
+import jdbc.service.services.DeveloperService;
 import jdbc.service.services.ProjectService;
 import jdbc.util.CommandUtil;
 import jdbc.util.PropertiesConfig;
@@ -29,8 +31,11 @@ public class Application {
 
         ProjectService projectService = new ProjectService(projectRepository, developerRepository, companyRepository, customerRepository,
                 developersProjectsRepository,companiesProjectsRepository, customersProjectsRepository);
+        CompanyService companyService = new CompanyService(companyRepository, projectRepository, companiesProjectsRepository);
+        DeveloperService developerService = new DeveloperService(developerRepository, projectRepository, companyRepository,
+                skillRepository, developersProjectsRepository, developersSkillsRepository);
 
-        CommandUtil commandUtil = new CommandUtil(projectService);
+        CommandUtil commandUtil = new CommandUtil(projectService, companyService, developerService);
         View view = new Console();
 
         CommandProcessor commandProcessor = new CommandProcessor(commandUtil, view);

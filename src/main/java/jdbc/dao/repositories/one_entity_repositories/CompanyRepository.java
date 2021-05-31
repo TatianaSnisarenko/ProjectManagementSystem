@@ -104,6 +104,23 @@ public class CompanyRepository implements Repository<CompanyDao> {
         return allCompanies;
     }
 
+    @Override
+    public List<Integer> getListOfValidIndexes() {
+        String query = "select id_company from companies order by id_company";
+        List<Integer> indexes = new ArrayList<>();
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                indexes.add(resultSet.getInt("id_company"));
+            }
+            return indexes;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return indexes;
+        }
+    }
+
     private boolean exists(CompanyDao companyDao) {
         return findAll().stream()
                 .anyMatch(c -> c.equals(companyDao));

@@ -2,7 +2,10 @@ package jdbc.service.services;
 
 import jdbc.dao.entity.CompanyDao;
 import jdbc.dao.entity.ProjectDao;
+import jdbc.dao.repositories.one_entity_repositories.CompanyRepository;
+import jdbc.dao.repositories.one_entity_repositories.ProjectRepository;
 import jdbc.dao.repositories.one_entity_repositories.Repository;
+import jdbc.dao.repositories.relations_repositories.CompaniesProjectsRepository;
 import jdbc.dao.repositories.relations_repositories.RelationsRepository;
 import jdbc.dto.CompanyTo;
 import jdbc.service.converters.CompanyConverter;
@@ -29,6 +32,12 @@ public class CompanyService {
         return CompanyConverter.fromCompanyDao(createdCompanyDao);
     }
 
+    public CompanyTo consoleCreate(String name, String city, CompanyTo defaultCompanyTo){
+        defaultCompanyTo.setName(name);
+        defaultCompanyTo.setCity(city);
+        return create(defaultCompanyTo);
+    }
+
 
     public CompanyTo findById(int companyId) {
         return CompanyConverter.fromCompanyDao(companyRepository.findById(companyId));
@@ -43,6 +52,12 @@ public class CompanyService {
         return CompanyConverter.fromCompanyDao(updatedCompanyDao);
     }
 
+    public CompanyTo consoleUpdate(String name, String city, CompanyTo defaultCompanyTo){
+        defaultCompanyTo.setName(name);
+        defaultCompanyTo.setCity(city);
+        return update(defaultCompanyTo);
+    }
+
     public CompanyTo deleteById(int companyId) {
         this.findById(companyId).getProjects().stream().
                 forEach(projectDao -> companiesProjectsRepository.delete(companyId, projectDao.getIdProject()));
@@ -55,7 +70,6 @@ public class CompanyService {
 
     public List<CompanyTo> findAll() {
         return CompanyConverter.allFromCompanyDao(companyRepository.findAll());
-
     }
 
     private void addProjectsAndRelations(CompanyTo companyTo, CompanyDao createdCompanyDao) {
@@ -70,5 +84,9 @@ public class CompanyService {
         return projectsOld.stream()
                 .filter(projectDao -> !projectsNew.contains(projectDao))
                 .collect(Collectors.toList());
+    }
+
+    public List<Integer> getListOfValidIndexes() {
+        return companyRepository.getListOfValidIndexes();
     }
 }
